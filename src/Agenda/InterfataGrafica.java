@@ -40,14 +40,15 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     String codDeInregistrare = "123";
     boolean utilizatorLogat = false;
 
-     private CarteDeTelefon modelTabelCarteDeTelefon = new CarteDeTelefon();
+    private CarteDeTelefon modelTabelCarteDeTelefon = new CarteDeTelefon();
+
     /**
      * Creates new form CarteDeTelefon
      */
     public InterfataGrafica() {
         initComponents();
         populareInformatiiSalvate();
-        
+
         File dir = new File("src\\reclame");
         pozeReclame = Arrays.asList(dir.listFiles());
         //  jList.setModel(model);
@@ -402,9 +403,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                 FileOutputStream fw = new FileOutputStream(file.getAbsoluteFile());
                 BufferedOutputStream bw = new BufferedOutputStream(fw);
                 ObjectOutput ow = new ObjectOutputStream(bw);
-                
+
                 ow.writeObject(modelTabelCarteDeTelefon.getAbonati());
-                
+
                 ow.close();
                 bw.close();
                 fw.close();
@@ -429,8 +430,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         fc.addChoosableFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File fisier = fc.getSelectedFile();
-            if(fisier != null && fisier.isFile())
-            {
+            if (fisier != null && fisier.isFile()) {
                 incarcaDateCarteTelefon(fisier.getAbsolutePath());
             }
         }
@@ -439,15 +439,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     private void jStergeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jStergeActionPerformed
         // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tabel.getModel();
-        int optiune = JOptionPane.showConfirmDialog(null,
-                "Doriti sa stergeti abonatul?",
-                "Stergere Abonat",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.INFORMATION_MESSAGE);
-        if (optiune == JOptionPane.YES_OPTION) {
-            model.removeRow(tabel.getSelectedRow());
-        }
+        stergeRandulSelectat();
     }//GEN-LAST:event_jStergeActionPerformed
 
     private void tfCautaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfCautaActionPerformed
@@ -510,9 +502,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             Abonat a = Abonat.getInstance(nume, prenume, cnp, telefon);
 
             modelTabelCarteDeTelefon.adaugaAbonat(a);
-            //DefaultTableModel model = (DefaultTableModel) tabel.getModel();
-            //model.addRow(new Object[]{tabel.getRowCount() + 1, a.getNume(), a.getPrenume(), a.getCnp(), a.getTelefon()});
-            // model.adaugaAbonat(new Object[]{tabel.getRowCount() + 1, a.getNume(), a.getPrenume(), a.getCnp(), a.getTelefon()});
 
             tfNume.setText("");
             tfPrenume.setText("");
@@ -543,20 +532,22 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     }//GEN-LAST:event_miStergeActionPerformed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
-        // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tabel.getModel();
+        stergeRandulSelectat();
+    }//GEN-LAST:event_formKeyPressed
 
-        if (tabel.isRowSelected(tabel.getSelectedRow())) {
+    private void stergeRandulSelectat() {
+        int selectedIndex = tabel.getSelectedRow();
+        if (tabel.isRowSelected(selectedIndex)) {
             int optiune = JOptionPane.showConfirmDialog(null,
                     "Doriti sa stergeti abonatul?",
                     "Stergere Abonat",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.INFORMATION_MESSAGE);
             if (optiune == JOptionPane.YES_OPTION) {
-                model.removeRow(tabel.getSelectedRow());
+                modelTabelCarteDeTelefon.removeAbonat(selectedIndex);
             }
         }
-    }//GEN-LAST:event_formKeyPressed
+    }
 
     /**
      * @param args the command line arguments
@@ -642,18 +633,21 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         String caleFisier = "date\\save.txt";
         incarcaDateCarteTelefon(caleFisier);
     }
-    
-    private void incarcaDateCarteTelefon(String caleFisier)
-    {
+
+    private void incarcaDateCarteTelefon(String caleFisier) {
         try {
+            // TODO add checks
+            // - verify that file exists
+            // - verify that isn't corrupted
+            // and show error messages
+
             File file = new File(caleFisier);
             FileInputStream fr = new FileInputStream(file.getAbsoluteFile());
             BufferedInputStream br = new BufferedInputStream(fr);
             ObjectInputStream or = new ObjectInputStream(br);
-            
-            List<Abonat> abonati = (List<Abonat>)or.readObject();
-            if(abonati != null)
-            {
+
+            List<Abonat> abonati = (List<Abonat>) or.readObject();
+            if (abonati != null) {
                 modelTabelCarteDeTelefon.seteazaAbonati(abonati);
             }
 
@@ -668,14 +662,14 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     private void afisareReclama() {
         //File calePozaCurenta = pozeReclame.get(reclamaCurenta);
-        if(pozeReclame.isEmpty())
-        {
+        if (pozeReclame.isEmpty()) {
             return;
         }
-        
+
         int nrPoza = (int) (Math.random() * pozeReclame.size());
         File calePozaCurenta = pozeReclame.get(nrPoza);
         ImageIcon poza = new ImageIcon(calePozaCurenta.getAbsolutePath());
         jlReclame.setIcon(poza);
     }
+
 }

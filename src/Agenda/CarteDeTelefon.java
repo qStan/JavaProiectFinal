@@ -37,6 +37,11 @@ public class CarteDeTelefon extends AbstractTableModel {
         fireTableRowsInserted(lastRowIndex, lastRowIndex);
     }
     
+    public void removeAbonat (int index){
+        abonati.remove(index);
+        fireTableRowsDeleted(index, index);
+    }
+    
     @Override
     public int getColumnCount() {
         return coloane.length;
@@ -61,7 +66,7 @@ public class CarteDeTelefon extends AbstractTableModel {
             switch(columnIndex)
             {
                 case 0: // Nr
-                    fieldValue = String.valueOf(rowIndex);
+                    fieldValue = String.valueOf(rowIndex+1);
                     break;
                 case 1: // Nume
                     fieldValue = abonat.getNume();
