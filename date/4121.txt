@@ -1,0 +1,4 @@
+Nr    /Nume    /Prenume    /CNP    /Nr telefon    /
+1    ,sads    ,dasda    ,123456789012    ,1234567890    ,
+2    ,dasd    ,asda    ,123456789012    ,1234567890    ,
+3    ,fjasoi    ,fbdas    ,123456789022    ,1234567890    ,
