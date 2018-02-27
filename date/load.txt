@@ -1,4 +1,0 @@
-Nume  	/Prenume	/CNP		/Nr telefon
-ion	,ion		,123456789012	,1234567890
-maria	,ion		,123456789012	,1234567890
-vasile	,ion		,123456789012	,1234567890

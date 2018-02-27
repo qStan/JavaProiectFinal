@@ -10,11 +10,14 @@ import exceptii.NrTelefonInvalidException;
 import exceptii.NumeInvalidException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -204,22 +207,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
         jScrollPane1.setPreferredSize(new java.awt.Dimension(580, 400));
 
-        tabel.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Nr", "Nume", "Prenume", "CNP", "Nr telefon"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
+        tabel.setModel(modelTabelCarteDeTelefon);
         tabel.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(tabel);
         tabel.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -405,23 +393,19 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         fc.addChoosableFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
         if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             //  File dir = fc.getSelectedFile();
-            File file = new File(fc.getSelectedFile() + ".txt");
+            File file = fc.getSelectedFile();
             try {
                 //File file = new File("save\\save.txt");
                 if (!file.exists()) {
                     file.createNewFile();
                 }
-                FileWriter fw = new FileWriter(file.getAbsoluteFile());
-                BufferedWriter bw = new BufferedWriter(fw);
-                for (int j = 0; j < tabel.getColumnCount(); j++) {
-                    bw.write(tabel.getColumnName(j) + "\t/");
-                }
-                for (int i = 0; i < tabel.getRowCount(); i++) {
-                    bw.newLine();
-                    for (int j = 0; j < tabel.getColumnCount(); j++) {
-                        bw.write(tabel.getModel().getValueAt(i, j) + "\t,");
-                    }
-                }
+                FileOutputStream fw = new FileOutputStream(file.getAbsoluteFile());
+                BufferedOutputStream bw = new BufferedOutputStream(fw);
+                ObjectOutput ow = new ObjectOutputStream(bw);
+                
+                ow.writeObject(modelTabelCarteDeTelefon.getAbonati());
+                
+                ow.close();
                 bw.close();
                 fw.close();
             } catch (Exception e) {
@@ -444,24 +428,10 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         fc.addChoosableFileFilter(new FileNameExtensionFilter("*.txt", "txt"));
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File dir = fc.getSelectedFile();
-
-            try {
-                BufferedReader br = new BufferedReader(new FileReader(dir));
-                String primaLinie = br.readLine().trim();
-                String[] numeColoane = primaLinie.split("/");
-                DefaultTableModel model = (DefaultTableModel) tabel.getModel();
-                model.setColumnIdentifiers(numeColoane);
-
-                Object[] liniiTabel = br.lines().toArray();
-                for (Object liniiTabel1 : liniiTabel) {
-                    String linieAbonat = liniiTabel1.toString().trim();
-                    String[] adaugaAbonat = linieAbonat.split(",");
-                    model.addRow(adaugaAbonat);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Logger.getLogger(InterfataGrafica.class.getName()).log(Level.SEVERE, null, e);
+            File fisier = fc.getSelectedFile();
+            if(fisier != null && fisier.isFile())
+            {
+                incarcaDateCarteTelefon(fisier.getAbsolutePath());
             }
         }
         // TODO add your handling code here:
@@ -669,26 +639,31 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     private void populareInformatiiSalvate() {
 
-        String fisier = "date\\save.txt";
-
+        String caleFisier = "date\\save.txt";
+        incarcaDateCarteTelefon(caleFisier);
+    }
+    
+    private void incarcaDateCarteTelefon(String caleFisier)
+    {
         try {
-            BufferedReader br = new BufferedReader(new FileReader(fisier));
-            String primaLinie = br.readLine().trim();
-            String[] numeColoane = primaLinie.split("/");
-            DefaultTableModel model = (DefaultTableModel) tabel.getModel();
-            model.setColumnIdentifiers(numeColoane);
-
-            Object[] liniiTabel = br.lines().toArray();
-            for (Object liniiTabel1 : liniiTabel) {
-                String linieAbonat = liniiTabel1.toString().trim();
-                String[] adaugaAbonat = linieAbonat.split(",");
-                model.addRow(adaugaAbonat);
+            File file = new File(caleFisier);
+            FileInputStream fr = new FileInputStream(file.getAbsoluteFile());
+            BufferedInputStream br = new BufferedInputStream(fr);
+            ObjectInputStream or = new ObjectInputStream(br);
+            
+            List<Abonat> abonati = (List<Abonat>)or.readObject();
+            if(abonati != null)
+            {
+                modelTabelCarteDeTelefon.seteazaAbonati(abonati);
             }
+
+            or.close();
+            br.close();
+            fr.close();
         } catch (Exception e) {
             e.printStackTrace();
             Logger.getLogger(InterfataGrafica.class.getName()).log(Level.SEVERE, null, e);
         }
-
     }
 
     private void afisareReclama() {

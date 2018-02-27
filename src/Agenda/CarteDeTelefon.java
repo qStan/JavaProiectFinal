@@ -18,6 +18,11 @@ public class CarteDeTelefon extends AbstractTableModel {
     private List<Abonat> abonati = new ArrayList<Abonat>();
     private String[] coloane = {"Nr. ", "Nume", "Prenume", "CNP", "Nr. de telefon"};
 
+    public List<Abonat> getAbonati()
+    {
+        return abonati;
+    }
+    
     public void seteazaAbonati(List<Abonat> abonati)
     {
         this.abonati = abonati;
