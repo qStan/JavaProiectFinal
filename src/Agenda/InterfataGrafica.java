@@ -70,16 +70,17 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         // timer reclame
         javax.swing.Timer timerReclame = new javax.swing.Timer(5000, taskReclame);
         timerReclame.start();
-        
+
         boolean isRegistered = appConfig.getIsRegistered();
         miInregistrare.setEnabled(!isRegistered);
         miOpen.setEnabled(isRegistered);
         miSave.setEnabled(isRegistered);
+        miLogOut.setEnabled(isRegistered);
         jlReclame.setVisible(!isRegistered);
         if (!isRegistered) {
             afisareReclama();
         }
-        
+
         // timer AutoSave
         javax.swing.Timer timerAutoSave = new javax.swing.Timer(60000 * 5, taskAutoSave);
         timerAutoSave.start();
@@ -171,6 +172,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         miInregistrare = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         jMenuItem9 = new javax.swing.JMenuItem();
+        miLogOut = new javax.swing.JMenuItem();
 
         fc.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
@@ -580,6 +582,16 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         });
         miHelp.add(jMenuItem9);
 
+        miLogOut.setMnemonic('l');
+        miLogOut.setText("Log Out");
+        miLogOut.setEnabled(false);
+        miLogOut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                miLogOutActionPerformed(evt);
+            }
+        });
+        miHelp.add(miLogOut);
+
         jMenuBar1.add(miHelp);
 
         setJMenuBar(jMenuBar1);
@@ -649,7 +661,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             //  File dir = fc.getSelectedFile();
             File file = fc.getSelectedFile();
             String caleFisier = file.toString();
-            appConfig.setLastSavedFilePath(caleFisier); 
+            appConfig.setLastSavedFilePath(caleFisier);
             salvareDateAbonati(caleFisier);
             aFostSalvat = true;
         }
@@ -704,7 +716,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     private void miInregistrareActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miInregistrareActionPerformed
         // TODO add your handling code here:
-        String parola = JOptionPane.showInputDialog("Care este parola?");
+        String parola = JOptionPane.showInputDialog("Care este parola? Parola este: 123");
         if (codDeInregistrare.compareTo(parola) == 0) {
             System.out.println("Parola este corecta.");
             miInregistrare.setEnabled(false);
@@ -715,8 +727,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         } else {
             popupMessage("Parola nu este buna", "Eroare", JOptionPane.ERROR_MESSAGE);
         }
-
-
+        miLogOut.setEnabled(true);
     }//GEN-LAST:event_miInregistrareActionPerformed
 
     private void jAdaugaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAdaugaActionPerformed
@@ -825,6 +836,23 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         }
     }//GEN-LAST:event_tfCautaCaretUpdate
 
+    private void miLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miLogOutActionPerformed
+        // TODO add your handling code here:
+        int optiune = JOptionPane.showConfirmDialog(null,
+                "Doriti sa va delogati?",
+                "Iesire",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.INFORMATION_MESSAGE);
+        if (optiune == JOptionPane.YES_OPTION) {
+            miInregistrare.setEnabled(true);
+            miOpen.setEnabled(false);
+            miSave.setEnabled(false);
+            appConfig.setIsRegistered(false);
+            jlReclame.setVisible(true);
+            miLogOut.setEnabled(false);
+        }
+    }//GEN-LAST:event_miLogOutActionPerformed
+
     private void stergeRandulSelectat() {
         int selectedIndex = tabel.getSelectedRow();
         if (tabel.isRowSelected(selectedIndex)) {
@@ -922,6 +950,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     private javax.swing.JMenu miHelp;
     private javax.swing.JMenuItem miIesire;
     private javax.swing.JMenuItem miInregistrare;
+    private javax.swing.JMenuItem miLogOut;
     private javax.swing.JMenuItem miOpen;
     private javax.swing.JMenuItem miSave;
     private javax.swing.JMenuItem miSterge;
