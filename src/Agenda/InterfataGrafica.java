@@ -40,6 +40,7 @@ import javax.swing.table.TableRowSorter;
  */
 public class InterfataGrafica extends javax.swing.JFrame implements Serializable {
 
+    private AppConfig appConfig;
     private static InterfataGrafica s_instance;
     private String previousCautareText = "";
 
@@ -48,12 +49,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     //date inregistrare user
     String codDeInregistrare = "123";
-    boolean utilizatorLogat = false;
     boolean aFostSalvat = false;
-
-    //locatia celei mai recenta salvare adate abonati
-    static String caleFisier = "date\\save.txt";
-    // String caleFisier = "date\\save.txt";
 
     private CarteDeTelefon modelTabelCarteDeTelefon = new CarteDeTelefon();
 
@@ -63,6 +59,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     public InterfataGrafica() {
         s_instance = this;
         initComponents();
+
+        appConfig = AppConfig.LoadFromFile();
+
         populareInformatiiSalvate();
 
         File dir = new File("src\\reclame");
@@ -71,10 +70,16 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         // timer reclame
         javax.swing.Timer timerReclame = new javax.swing.Timer(5000, taskReclame);
         timerReclame.start();
-        if (!utilizatorLogat) {
+        
+        boolean isRegistered = appConfig.getIsRegistered();
+        miInregistrare.setEnabled(!isRegistered);
+        miOpen.setEnabled(isRegistered);
+        miSave.setEnabled(isRegistered);
+        jlReclame.setVisible(!isRegistered);
+        if (!isRegistered) {
             afisareReclama();
         }
-
+        
         // timer AutoSave
         javax.swing.Timer timerAutoSave = new javax.swing.Timer(60000 * 5, taskAutoSave);
         timerAutoSave.start();
@@ -84,7 +89,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     ActionListener taskReclame = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-            if (!utilizatorLogat) {
+            if (!appConfig.getIsRegistered()) {
                 afisareReclama();
             }
         }
@@ -93,7 +98,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     ActionListener taskAutoSave = new ActionListener() {
         public void actionPerformed(ActionEvent e) {
             if (aFostSalvat) {
-                salvareDateAbonati(caleFisier);
+                salvareDateAbonati(appConfig.getLastSavedFilePath());
             }
         }
     };
@@ -449,7 +454,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         });
 
         jSterge.setText("Stergere Abonat");
-        jSterge.setEnabled(false);
         jSterge.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jStergeActionPerformed(evt);
@@ -464,7 +468,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         });
 
         jButton1.setText("Modifica Abonat");
-        jButton1.setEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -545,7 +548,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
         jMenuItem7.setMnemonic('M');
         jMenuItem7.setText("Modifica");
-        jMenuItem7.setEnabled(false);
         jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem7ActionPerformed(evt);
@@ -646,7 +648,8 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             //  File dir = fc.getSelectedFile();
             File file = fc.getSelectedFile();
-            caleFisier = file.toString();
+            String caleFisier = file.toString();
+            appConfig.setLastSavedFilePath(caleFisier); 
             salvareDateAbonati(caleFisier);
             aFostSalvat = true;
         }
@@ -707,7 +710,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             miInregistrare.setEnabled(false);
             miOpen.setEnabled(true);
             miSave.setEnabled(true);
-            utilizatorLogat = true;
+            appConfig.setIsRegistered(true);
             jlReclame.setVisible(false);
         } else {
             popupMessage("Parola nu este buna", "Eroare", JOptionPane.ERROR_MESSAGE);
@@ -818,7 +821,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         TableRowSorter<CarteDeTelefon> rowSorter = (TableRowSorter<CarteDeTelefon>) tabel.getRowSorter();
         if (!previousCautareText.equals(text)) {
             rowSorter.setRowFilter(RowFilter.regexFilter(text));
-			previousCautareText = text;
+            previousCautareText = text;
         }
     }//GEN-LAST:event_tfCautaCaretUpdate
 
@@ -939,7 +942,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     }
 
     private void populareInformatiiSalvate() {
-        incarcaDateCarteTelefon(caleFisier);
+        incarcaDateCarteTelefon(appConfig.getLastSavedFilePath());
     }
 
     private void incarcaDateCarteTelefon(String caleFisier) {
