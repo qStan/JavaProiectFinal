@@ -19,6 +19,9 @@ public class Abonat implements Serializable {
 
     private String nume, prenume, cnp, telefon;
 
+    private Abonat() {
+    }
+    
     public Abonat(String nume, String prenume, String cnp, String telefon) {
         this.nume = nume;
         this.prenume = prenume;
@@ -42,37 +45,42 @@ public class Abonat implements Serializable {
         return telefon;
     }
 
-    public void setNume(String numeNou) {
+    public void setNume(String numeNou) throws NumeInvalidException{
+        if (!valideazaNume(numeNou)) {
+            throw new NumeInvalidException("Introdu nume!");
+        }
         this.nume = numeNou;
     }
 
-    public void setPrenume(String prenumeNou) {
+    public void setPrenume(String prenumeNou) throws NumeInvalidException {
+        if (!valideazaPrenume(prenumeNou)) {
+            throw new NumeInvalidException("Introdu prenume!");
+        }
         this.prenume = prenumeNou;
     }
 
-    public void setCNP(String cnpNou) {
+    public void setCNP(String cnpNou) throws CnpInvalidException{
+        if (!valideazaCnp(cnpNou)) {
+            throw new CnpInvalidException("CNP-ul trebuie sa contina doar cifre!");
+        }
         this.cnp = cnpNou;
     }
 
-    public void setTelefon(String telefonNou) {
+    public void setTelefon(String telefonNou) throws NrTelefonInvalidException{
+        if (NrTel.getInstance(telefonNou) == null) {
+            throw new NrTelefonInvalidException("Nr-ul de telefon trebuie sa contina doar cifre!");
+        }
         this.cnp = telefonNou;
     }
 
 // constructor
     public static Abonat getInstance(String nume, String prenume, String cnp, String telefon) {
-        if (!valideazaNume(nume)) {
-            throw new NumeInvalidException("Introdu nume!");
-        }
-        if (!valideazaPrenume(prenume)) {
-            throw new NumeInvalidException("Introdu prenume!");
-        }
-        if (!valideazaCnp(cnp)) {
-            throw new CnpInvalidException("CNP-ul trebuie sa contina doar cifre!");
-        }
-        if (NrTel.getInstance(telefon) == null) {
-            throw new NrTelefonInvalidException("Nr-ul de telefon trebuie sa contina doar cifre!");
-        }
-        return new Abonat(nume, prenume, cnp, telefon);
+        Abonat abonatNou = new Abonat();
+        abonatNou.setNume(nume);
+        abonatNou.setPrenume(prenume);
+        abonatNou.setCNP(cnp);
+        abonatNou.setTelefon(telefon);
+        return abonatNou;
     }
     
     // metode validari

@@ -29,14 +29,19 @@ import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author lili
  */
 public class InterfataGrafica extends javax.swing.JFrame implements Serializable {
+
+    private static InterfataGrafica s_instance;
+    private String previousCautareText = "";
 
     // reclame
     private List<File> pozeReclame;
@@ -56,12 +61,13 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
      * Creates new form CarteDeTelefon
      */
     public InterfataGrafica() {
+        s_instance = this;
         initComponents();
         populareInformatiiSalvate();
 
         File dir = new File("src\\reclame");
         pozeReclame = Arrays.asList(dir.listFiles());
-        
+
         // timer reclame
         javax.swing.Timer timerReclame = new javax.swing.Timer(5000, taskReclame);
         timerReclame.start();
@@ -72,6 +78,8 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         // timer AutoSave
         javax.swing.Timer timerAutoSave = new javax.swing.Timer(60000 * 5, taskAutoSave);
         timerAutoSave.start();
+
+        tabel.setAutoCreateRowSorter(true);
     }
 
     ActionListener taskReclame = new ActionListener() {
@@ -134,7 +142,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         jScrollPane1 = new javax.swing.JScrollPane();
         tabel = new javax.swing.JTable();
         tfCauta = new javax.swing.JTextField();
-        bCauta = new javax.swing.JButton();
         jReclame = new javax.swing.JPanel();
         jlReclame = new javax.swing.JLabel();
         bIesire = new javax.swing.JButton();
@@ -143,6 +150,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         jButton1 = new javax.swing.JButton();
         jlLastSave = new javax.swing.JLabel();
         jlTimpSalvare = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         miOpen = new javax.swing.JMenuItem();
@@ -162,9 +170,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         fc.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
 
         jfAdauga.setLocation(new java.awt.Point(300, 300));
-        jfAdauga.setMaximumSize(new java.awt.Dimension(2147483647, 300));
         jfAdauga.setMinimumSize(new java.awt.Dimension(400, 300));
-        jfAdauga.setPreferredSize(new java.awt.Dimension(400, 300));
 
         jPanel1.setMinimumSize(new java.awt.Dimension(300, 200));
         jPanel1.setPreferredSize(new java.awt.Dimension(300, 200));
@@ -245,7 +251,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         );
 
         jAbout.setMinimumSize(new java.awt.Dimension(280, 360));
-        jAbout.setPreferredSize(new java.awt.Dimension(280, 360));
         jAbout.setResizable(false);
 
         jLabel7.setText("Informatii despre aplicatie:");
@@ -310,9 +315,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         );
 
         jfModifica.setLocation(new java.awt.Point(300, 300));
-        jfModifica.setMaximumSize(new java.awt.Dimension(2147483647, 300));
         jfModifica.setMinimumSize(new java.awt.Dimension(400, 300));
-        jfModifica.setPreferredSize(new java.awt.Dimension(400, 300));
 
         jPanel3.setMinimumSize(new java.awt.Dimension(300, 200));
 
@@ -395,7 +398,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         setMaximumSize(new java.awt.Dimension(700, 460));
         setMinimumSize(new java.awt.Dimension(705, 460));
         setName("InterfataPrincipala"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(705, 460));
         addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 formKeyPressed(evt);
@@ -413,16 +415,14 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             tabel.getColumnModel().getColumn(0).setPreferredWidth(30);
         }
 
+        tfCauta.addCaretListener(new javax.swing.event.CaretListener() {
+            public void caretUpdate(javax.swing.event.CaretEvent evt) {
+                tfCautaCaretUpdate(evt);
+            }
+        });
         tfCauta.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 tfCautaActionPerformed(evt);
-            }
-        });
-
-        bCauta.setText("Cauta");
-        bCauta.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bCautaActionPerformed(evt);
             }
         });
 
@@ -473,6 +473,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
         jlLastSave.setText("Last save:");
         jlLastSave.setEnabled(false);
+
+        jLabel5.setFont(new java.awt.Font("sansserif", 0, 14)); // NOI18N
+        jLabel5.setText("Cautare:");
 
         jMenu1.setMnemonic('f');
         jMenu1.setText("File");
@@ -595,8 +598,8 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jReclame, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addComponent(bCauta)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel5)
+                                .addGap(26, 26, 26)
                                 .addComponent(tfCauta)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(bAdaugaAbonatNou)
@@ -617,11 +620,11 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfCauta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(bCauta)
                     .addComponent(bIesire)
                     .addComponent(jSterge)
                     .addComponent(bAdaugaAbonatNou)
-                    .addComponent(jButton1))
+                    .addComponent(jButton1)
+                    .addComponent(jLabel5))
                 .addGap(30, 30, 30)
                 .addComponent(jReclame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(4, 4, 4)
@@ -676,20 +679,8 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     }//GEN-LAST:event_jStergeActionPerformed
 
     private void tfCautaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfCautaActionPerformed
-        // TODO add your handling code here:
-        String text = tfCauta.getText();
-    }//GEN-LAST:event_tfCautaActionPerformed
 
-    private void bCautaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bCautaActionPerformed
-        // TODO add your handling code here:
-        DefaultTableModel model = (DefaultTableModel) tabel.getModel();
-        for (int i = 0; i < tabel.getRowCount(); i++) {
-            for (int j = 0; j < tabel.getColumnCount(); j++) {
-                if (model.getValueAt(i, j).toString().equalsIgnoreCase(tfCauta.getText())) {
-                }
-            }
-        }
-    }//GEN-LAST:event_bCautaActionPerformed
+    }//GEN-LAST:event_tfCautaActionPerformed
 
     private void miIesireActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miIesireActionPerformed
         // TODO add your handling code here:
@@ -742,17 +733,24 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             tfTelefon.setText("");
             jfAdauga.setVisible(false);
             popupMessage("Abonatul a fost adaugat", "Succes", JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumeInvalidException e) {
-            popupMessage("Nume invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } catch (CnpInvalidException e) {
-            popupMessage("CNP invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } catch (NrTelefonInvalidException e) {
-            popupMessage("Nr de telefon invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            ShowAbonatEditErrorMessage(e);
         }
-
     }//GEN-LAST:event_jAdaugaActionPerformed
+
+    public static void ShowAbonatEditErrorMessage(Exception e) {
+        if (e instanceof NumeInvalidException) {
+            s_instance.popupMessage("Nume invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else if (e instanceof CnpInvalidException) {
+            s_instance.popupMessage("CNP invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else if (e instanceof NrTelefonInvalidException) {
+            s_instance.popupMessage("Nr de telefon invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else if (e instanceof IllegalArgumentException) {
+            s_instance.popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else {
+            s_instance.popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
     private void miAdaugaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAdaugaActionPerformed
         // TODO add your handling code here:
@@ -815,6 +813,15 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void tfCautaCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_tfCautaCaretUpdate
+        String text = tfCauta.getText();
+        TableRowSorter<CarteDeTelefon> rowSorter = (TableRowSorter<CarteDeTelefon>) tabel.getRowSorter();
+        if (!previousCautareText.equals(text)) {
+            rowSorter.setRowFilter(RowFilter.regexFilter(text));
+			previousCautareText = text;
+        }
+    }//GEN-LAST:event_tfCautaCaretUpdate
+
     private void stergeRandulSelectat() {
         int selectedIndex = tabel.getSelectedRow();
         if (tabel.isRowSelected(selectedIndex)) {
@@ -867,7 +874,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bAdaugaAbonatNou;
-    private javax.swing.JButton bCauta;
     private javax.swing.JButton bIesire;
     private javax.swing.JButton bModifica;
     private javax.swing.JFileChooser fc;
@@ -881,6 +887,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;

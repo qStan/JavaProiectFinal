@@ -92,29 +92,35 @@ public class CarteDeTelefon extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object editare, int rowIndex, int columnIndex) {
-        Abonat abonat = abonati.get(rowIndex);
-        switch (columnIndex) {
-            case 0: // Nr
-                //
-                break;
-            case 1: // Nume
-                abonat.setNume((String) editare);
-                break;
-            case 2: // Prenume
-                abonat.setPrenume((String) editare);
-                break;
-            case 3: // CNP
-                abonat.setCNP((String) editare);
-                break;
-            case 4: // Nr de telefon                
-                abonat.setTelefon((String) editare);
-                break;
+        try
+        {
+            Abonat abonat = abonati.get(rowIndex);
+            switch (columnIndex) {
+                case 0: // Nr
+                    //
+                    break;
+                case 1: // Nume
+                    abonat.setNume((String) editare);
+                    break;
+                case 2: // Prenume
+                    abonat.setPrenume((String) editare);
+                    break;
+                case 3: // CNP
+                    abonat.setCNP((String) editare);
+                    break;
+                case 4: // Nr de telefon                
+                    abonat.setTelefon((String) editare);
+                    break;
+            }
+            fireTableCellUpdated(rowIndex, columnIndex);
         }
-        fireTableCellUpdated(rowIndex, columnIndex);
+        catch(Exception e)
+        {
+            InterfataGrafica.ShowAbonatEditErrorMessage(e);
+        }
     }
 
     /*
-
     public void fireTableCellUpdated(int row, int column) {
         fireTableChanged(new TableModelEvent(this, row, row, column));
     }
