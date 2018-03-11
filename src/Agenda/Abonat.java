@@ -26,6 +26,38 @@ public class Abonat implements Serializable {
         this.telefon = telefon;
     }
 
+    public String getNume() {
+        return nume;
+    }
+
+    public String getPrenume() {
+        return prenume;
+    }
+
+    public String getCnp() {
+        return cnp;
+    }
+
+    public String getTelefon() {
+        return telefon;
+    }
+
+    public void setNume(String numeNou) {
+        this.nume = numeNou;
+    }
+
+    public void setPrenume(String prenumeNou) {
+        this.prenume = prenumeNou;
+    }
+
+    public void setCNP(String cnpNou) {
+        this.cnp = cnpNou;
+    }
+
+    public void setTelefon(String telefonNou) {
+        this.cnp = telefonNou;
+    }
+
 // constructor
     public static Abonat getInstance(String nume, String prenume, String cnp, String telefon) {
         if (!valideazaNume(nume)) {
@@ -42,27 +74,7 @@ public class Abonat implements Serializable {
         }
         return new Abonat(nume, prenume, cnp, telefon);
     }
-
     
-/*    
-    // constructor
-    public static Abonat[] getInstance(String nume, String prenume, String cnp, String telefon) {
-        if (!valideazaNume(nume)) {
-            throw new NumeInvalidException("Introdu nume!");
-        }
-        if (!valideazaPrenume(prenume)) {
-            throw new NumeInvalidException("Introdu prenume!");
-        }
-        if (!valideazaCnp(cnp)) {
-            throw new CnpInvalidException("CNP-ul trebuie sa contina doar cifre!");
-        }
-        if (NrTel.getInstance(telefon) == null) {
-            throw new NrTelefonInvalidException("Nr-ul de telefon trebuie sa contina doar cifre!");
-        }
-        Abonat[] a = {nume, prenume, cnp, telefon};
-        return a;
-    }
-*/
     // metode validari
     private static boolean valideazaNume(String nume) {
         if (nume == null || nume.length() < 2) {
@@ -107,22 +119,6 @@ public class Abonat implements Serializable {
     @Override
     public String toString() {
         return nume + " " + prenume + ", CNP: " + cnp + ", nr.Tel: " + NrTel.getInstance(telefon);
-    }
-
-    public String getNume() {
-        return nume;
-    }
-
-    public String getPrenume() {
-        return prenume;
-    }
-
-    public String getCnp() {
-        return cnp;
-    }
-
-    public String getTelefon() {
-        return telefon;
     }
 
     public static void main(String[] args) {
