@@ -32,7 +32,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 
 /**
@@ -668,6 +667,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         tfCauta.getAccessibleContext().setAccessibleDescription("");
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void miSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miSaveActionPerformed
@@ -918,6 +918,13 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                try{
+                    Thread.sleep(2000);
+                }
+                catch(Exception e){
+                    
+                }
+                
                 new InterfataGrafica().setVisible(true);
             }
         });
