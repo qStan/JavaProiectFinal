@@ -39,6 +39,12 @@ public class CarteDeTelefon extends AbstractTableModel {
         fireTableRowsDeleted(index, index);
     }
 
+    public void modificaAbonat(int index, Abonat a) {
+        abonati.set(index, a);
+        int lastRowIndex = abonati.indexOf(a);
+        fireTableRowsInserted(lastRowIndex, lastRowIndex);
+    }
+
     @Override
     public int getColumnCount() {
         return coloane.length;
@@ -92,8 +98,7 @@ public class CarteDeTelefon extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object editare, int rowIndex, int columnIndex) {
-        try
-        {
+        try {
             Abonat abonat = abonati.get(rowIndex);
             switch (columnIndex) {
                 case 0: // Nr
@@ -113,9 +118,7 @@ public class CarteDeTelefon extends AbstractTableModel {
                     break;
             }
             fireTableCellUpdated(rowIndex, columnIndex);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             InterfataGrafica.ShowAbonatEditErrorMessage(e);
         }
     }

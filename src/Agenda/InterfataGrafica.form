@@ -475,18 +475,20 @@
                 </Property>
                 <Property name="mnemonic" type="int" value="83"/>
                 <Property name="text" type="java.lang.String" value="Sterge"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miStergeActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem7">
+            <MenuItem class="javax.swing.JMenuItem" name="miModifica">
               <Properties>
                 <Property name="mnemonic" type="int" value="77"/>
                 <Property name="text" type="java.lang.String" value="Modifica"/>
+                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem7ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miModificaActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -511,13 +513,13 @@
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator2">
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="jMenuItem9">
+            <MenuItem class="javax.swing.JMenuItem" name="miAbout">
               <Properties>
                 <Property name="mnemonic" type="int" value="97"/>
                 <Property name="text" type="java.lang.String" value="About"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jMenuItem9ActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="miAboutActionPerformed"/>
               </Events>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="miLogOut">
@@ -579,21 +581,21 @@
                   </Group>
                   <Group type="102" alignment="1" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
-                          <Component id="jReclame" alignment="0" pref="665" max="32767" attributes="0"/>
+                          <Component id="jReclame" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace min="-2" pref="26" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="tfCauta" max="32767" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="bAdaugaAbonatNou" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jSterge" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Component id="jButton1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="bAdaugaAbonat" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="bStergereAbonat" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                              <Component id="bModificaAbonat" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="bIesire" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="jScrollPane1" alignment="1" pref="665" max="32767" attributes="0"/>
+                          <Component id="jScrollPane1" alignment="1" pref="650" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace min="20" pref="20" max="-2" attributes="0"/>
                   </Group>
@@ -610,9 +612,9 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="tfCauta" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="bIesire" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jSterge" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="bAdaugaAbonatNou" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bStergereAbonat" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bAdaugaAbonat" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="bModificaAbonat" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
@@ -629,8 +631,12 @@
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <Properties>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[645, 25]"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="" noResource="true"/>
         <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
-          <Dimension value="[580, 400]"/>
+          <Dimension value="[645, 400]"/>
         </Property>
       </Properties>
 
@@ -675,13 +681,25 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tabelMouseClicked"/>
+            <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tabelKeyTyped"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
     <Component class="javax.swing.JTextField" name="tfCauta">
+      <Properties>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[100, 28]"/>
+        </Property>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+        <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
+      </AccessibilityProperties>
       <Events>
         <EventHandler event="caretUpdate" listener="javax.swing.event.CaretListener" parameters="javax.swing.event.CaretEvent" handler="tfCautaCaretUpdate"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tfCautaActionPerformed"/>
       </Events>
     </Component>
     <Container class="javax.swing.JPanel" name="jReclame">
@@ -719,28 +737,30 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bIesireActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jSterge">
+    <Component class="javax.swing.JButton" name="bStergereAbonat">
       <Properties>
         <Property name="text" type="java.lang.String" value="Stergere Abonat"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jStergeActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bStergereAbonatActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="bAdaugaAbonatNou">
+    <Component class="javax.swing.JButton" name="bAdaugaAbonat">
       <Properties>
         <Property name="text" type="java.lang.String" value="Adauga Abonat"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bAdaugaAbonatNouActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bAdaugaAbonatActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="jButton1">
+    <Component class="javax.swing.JButton" name="bModificaAbonat">
       <Properties>
         <Property name="text" type="java.lang.String" value="Modifica Abonat"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bModificaAbonatActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jlLastSave">

@@ -10,6 +10,7 @@ import exceptii.NrTelefonInvalidException;
 import exceptii.NumeInvalidException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -44,11 +45,15 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     private static InterfataGrafica s_instance;
     private String previousCautareText = "";
 
+    private static int s_randModificareAbonat;
+
     // reclame
     private List<File> pozeReclame;
 
-    //date inregistrare user
+    //  date inregistrare user
     String codDeInregistrare = "123";
+
+    // status autoSave
     boolean aFostSalvat = false;
 
     private CarteDeTelefon modelTabelCarteDeTelefon = new CarteDeTelefon();
@@ -151,9 +156,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         jReclame = new javax.swing.JPanel();
         jlReclame = new javax.swing.JLabel();
         bIesire = new javax.swing.JButton();
-        jSterge = new javax.swing.JButton();
-        bAdaugaAbonatNou = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        bStergereAbonat = new javax.swing.JButton();
+        bAdaugaAbonat = new javax.swing.JButton();
+        bModificaAbonat = new javax.swing.JButton();
         jlLastSave = new javax.swing.JLabel();
         jlTimpSalvare = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -167,11 +172,11 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         miAdauga = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
         miSterge = new javax.swing.JMenuItem();
-        jMenuItem7 = new javax.swing.JMenuItem();
+        miModifica = new javax.swing.JMenuItem();
         miHelp = new javax.swing.JMenu();
         miInregistrare = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem9 = new javax.swing.JMenuItem();
+        miAbout = new javax.swing.JMenuItem();
         miLogOut = new javax.swing.JMenuItem();
 
         fc.setFileSelectionMode(javax.swing.JFileChooser.DIRECTORIES_ONLY);
@@ -411,10 +416,22 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             }
         });
 
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(580, 400));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(645, 25));
+        jScrollPane1.setName(""); // NOI18N
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(645, 400));
 
         tabel.setModel(modelTabelCarteDeTelefon);
         tabel.setColumnSelectionAllowed(true);
+        tabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tabelMouseClicked(evt);
+            }
+        });
+        tabel.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tabelKeyTyped(evt);
+            }
+        });
         jScrollPane1.setViewportView(tabel);
         tabel.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         if (tabel.getColumnModel().getColumnCount() > 0) {
@@ -422,14 +439,10 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             tabel.getColumnModel().getColumn(0).setPreferredWidth(30);
         }
 
+        tfCauta.setPreferredSize(new java.awt.Dimension(100, 28));
         tfCauta.addCaretListener(new javax.swing.event.CaretListener() {
             public void caretUpdate(javax.swing.event.CaretEvent evt) {
                 tfCautaCaretUpdate(evt);
-            }
-        });
-        tfCauta.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfCautaActionPerformed(evt);
             }
         });
 
@@ -455,24 +468,26 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             }
         });
 
-        jSterge.setText("Stergere Abonat");
-        jSterge.addActionListener(new java.awt.event.ActionListener() {
+        bStergereAbonat.setText("Stergere Abonat");
+        bStergereAbonat.setEnabled(false);
+        bStergereAbonat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jStergeActionPerformed(evt);
+                bStergereAbonatActionPerformed(evt);
             }
         });
 
-        bAdaugaAbonatNou.setText("Adauga Abonat");
-        bAdaugaAbonatNou.addActionListener(new java.awt.event.ActionListener() {
+        bAdaugaAbonat.setText("Adauga Abonat");
+        bAdaugaAbonat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                bAdaugaAbonatNouActionPerformed(evt);
+                bAdaugaAbonatActionPerformed(evt);
             }
         });
 
-        jButton1.setText("Modifica Abonat");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        bModificaAbonat.setText("Modifica Abonat");
+        bModificaAbonat.setEnabled(false);
+        bModificaAbonat.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                bModificaAbonatActionPerformed(evt);
             }
         });
 
@@ -541,6 +556,7 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         miSterge.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         miSterge.setMnemonic('S');
         miSterge.setText("Sterge");
+        miSterge.setEnabled(false);
         miSterge.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 miStergeActionPerformed(evt);
@@ -548,14 +564,15 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         });
         jMenu2.add(miSterge);
 
-        jMenuItem7.setMnemonic('M');
-        jMenuItem7.setText("Modifica");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+        miModifica.setMnemonic('M');
+        miModifica.setText("Modifica");
+        miModifica.setEnabled(false);
+        miModifica.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7ActionPerformed(evt);
+                miModificaActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem7);
+        jMenu2.add(miModifica);
 
         jMenuBar1.add(jMenu2);
 
@@ -573,14 +590,14 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         miHelp.add(miInregistrare);
         miHelp.add(jSeparator2);
 
-        jMenuItem9.setMnemonic('a');
-        jMenuItem9.setText("About");
-        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+        miAbout.setMnemonic('a');
+        miAbout.setText("About");
+        miAbout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem9ActionPerformed(evt);
+                miAboutActionPerformed(evt);
             }
         });
-        miHelp.add(jMenuItem9);
+        miHelp.add(miAbout);
 
         miLogOut.setMnemonic('l');
         miLogOut.setText("Log Out");
@@ -610,20 +627,20 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jReclame, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE)
+                            .addComponent(jReclame, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(jLabel5)
-                                .addGap(26, 26, 26)
-                                .addComponent(tfCauta)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(bAdaugaAbonatNou)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jSterge)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(tfCauta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(bAdaugaAbonat)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(bStergereAbonat)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(bModificaAbonat)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(bIesire))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 665, Short.MAX_VALUE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 650, Short.MAX_VALUE))
                         .addGap(20, 20, 20))))
         );
         layout.setVerticalGroup(
@@ -635,9 +652,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tfCauta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(bIesire)
-                    .addComponent(jSterge)
-                    .addComponent(bAdaugaAbonatNou)
-                    .addComponent(jButton1)
+                    .addComponent(bStergereAbonat)
+                    .addComponent(bAdaugaAbonat)
+                    .addComponent(bModificaAbonat)
                     .addComponent(jLabel5))
                 .addGap(30, 30, 30)
                 .addComponent(jReclame, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -646,6 +663,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                     .addComponent(jlLastSave)
                     .addComponent(jlTimpSalvare)))
         );
+
+        tfCauta.getAccessibleContext().setAccessibleName("");
+        tfCauta.getAccessibleContext().setAccessibleDescription("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -667,10 +687,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         }
     }//GEN-LAST:event_miSaveActionPerformed
 
-    private void bAdaugaAbonatNouActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAdaugaAbonatNouActionPerformed
-        // TODO add your handling code here:
+    private void bAdaugaAbonatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bAdaugaAbonatActionPerformed
         jfAdauga.setVisible(true);
-    }//GEN-LAST:event_bAdaugaAbonatNouActionPerformed
+    }//GEN-LAST:event_bAdaugaAbonatActionPerformed
 
     private void miOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miOpenActionPerformed
         String folder = "date";
@@ -685,20 +704,13 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                 incarcaDateCarteTelefon(fisier.getAbsolutePath());
             }
         }
-        // TODO add your handling code here:
     }//GEN-LAST:event_miOpenActionPerformed
 
-    private void jStergeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jStergeActionPerformed
-        // TODO add your handling code here:
+    private void bStergereAbonatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bStergereAbonatActionPerformed
         stergeRandulSelectat();
-    }//GEN-LAST:event_jStergeActionPerformed
-
-    private void tfCautaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfCautaActionPerformed
-
-    }//GEN-LAST:event_tfCautaActionPerformed
+    }//GEN-LAST:event_bStergereAbonatActionPerformed
 
     private void miIesireActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miIesireActionPerformed
-        // TODO add your handling code here:
         bIesireActionPerformed(evt);
     }//GEN-LAST:event_miIesireActionPerformed
 
@@ -731,7 +743,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     }//GEN-LAST:event_miInregistrareActionPerformed
 
     private void jAdaugaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jAdaugaActionPerformed
-        // TODO add your handling code here:
         try {
             String nume = tfNume.getText();
             String prenume = tfPrenume.getText();
@@ -752,80 +763,39 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         }
     }//GEN-LAST:event_jAdaugaActionPerformed
 
-    public static void ShowAbonatEditErrorMessage(Exception e) {
-        if (e instanceof NumeInvalidException) {
-            s_instance.popupMessage("Nume invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } else if (e instanceof CnpInvalidException) {
-            s_instance.popupMessage("CNP invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } else if (e instanceof NrTelefonInvalidException) {
-            s_instance.popupMessage("Nr de telefon invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } else if (e instanceof IllegalArgumentException) {
-            s_instance.popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
-        } else {
-            s_instance.popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private void miAdaugaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAdaugaActionPerformed
-        // TODO add your handling code here:
         jfAdauga.setVisible(true);
     }//GEN-LAST:event_miAdaugaActionPerformed
 
     private void miStergeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miStergeActionPerformed
-        // TODO add your handling code here:
-        jStergeActionPerformed(evt);
+        bStergereAbonatActionPerformed(evt);
     }//GEN-LAST:event_miStergeActionPerformed
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         stergeRandulSelectat();
     }//GEN-LAST:event_formKeyPressed
 
-    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        // TODO add your handling code here:
-        // devine enabled cand un abonat este selectat
+    private void miModificaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miModificaActionPerformed
+        modificaAbonatulSelectat(s_randModificareAbonat);
+    }//GEN-LAST:event_miModificaActionPerformed
 
-    }//GEN-LAST:event_jMenuItem7ActionPerformed
-
-    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
-        // TODO add your handling code here:
+    private void miAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miAboutActionPerformed
         jAbout.setVisible(true);
-    }//GEN-LAST:event_jMenuItem9ActionPerformed
+    }//GEN-LAST:event_miAboutActionPerformed
 
     private void bModificaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bModificaActionPerformed
-        // TODO add your handling code here:
-        try {
-            String nume = tfNume1.getText();
-            String prenume = tfPrenume1.getText();
-            String cnp = tfCNP1.getText();
-            String telefon = tfTelefon1.getText();
-            Abonat a = Abonat.getInstance(nume, prenume, cnp, telefon);
-
-            modelTabelCarteDeTelefon.adaugaAbonat(a);
-
-            tfNume1.setText("");
-            tfPrenume1.setText("");
-            tfCNP1.setText("");
-            tfTelefon1.setText("");
-            jfModifica.setVisible(false);
-            popupMessage("Abonatul a fost adaugat", "Succes", JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumeInvalidException e) {
-            popupMessage("Nume invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } catch (CnpInvalidException e) {
-            popupMessage("CNP invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } catch (NrTelefonInvalidException e) {
-            popupMessage("Nr de telefon invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
-        } catch (IllegalArgumentException e) {
-            popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
-        }
-
-
+        modificaAbonatulSelectat(s_randModificareAbonat);
     }//GEN-LAST:event_bModificaActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+    private void bModificaAbonatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bModificaAbonatActionPerformed
         jfModifica.setVisible(true);
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+        tfNume1.setText(modelTabelCarteDeTelefon.getValueAt(s_randModificareAbonat, 1).toString());
+        tfPrenume1.setText(modelTabelCarteDeTelefon.getValueAt(s_randModificareAbonat, 2).toString());
+        tfCNP1.setText(modelTabelCarteDeTelefon.getValueAt(s_randModificareAbonat, 3).toString());
+        tfTelefon1.setText(modelTabelCarteDeTelefon.getValueAt(s_randModificareAbonat, 4).toString());
+
+    }//GEN-LAST:event_bModificaAbonatActionPerformed
 
     private void tfCautaCaretUpdate(javax.swing.event.CaretEvent evt) {//GEN-FIRST:event_tfCautaCaretUpdate
         String text = tfCauta.getText();
@@ -837,7 +807,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     }//GEN-LAST:event_tfCautaCaretUpdate
 
     private void miLogOutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_miLogOutActionPerformed
-        // TODO add your handling code here:
         int optiune = JOptionPane.showConfirmDialog(null,
                 "Doriti sa va delogati?",
                 "Iesire",
@@ -853,6 +822,24 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         }
     }//GEN-LAST:event_miLogOutActionPerformed
 
+    private void tabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tabelMouseClicked
+        int rand = tabel.getSelectedRow();
+        s_randModificareAbonat = rand;
+        bModificaAbonat.setEnabled(true);
+        bStergereAbonat.setEnabled(true);
+        miModifica.setEnabled(true);
+        miSterge.setEnabled(true);
+    }//GEN-LAST:event_tabelMouseClicked
+
+    private void tabelKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tabelKeyTyped
+        switch (evt.getKeyCode()) {
+            case KeyEvent.VK_DELETE:
+                stergeRandulSelectat();
+            default:
+                break;
+        }
+    }//GEN-LAST:event_tabelKeyTyped
+
     private void stergeRandulSelectat() {
         int selectedIndex = tabel.getSelectedRow();
         if (tabel.isRowSelected(selectedIndex)) {
@@ -867,10 +854,35 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         }
     }
 
+    private void modificaAbonatulSelectat(int rand) {
+        try {
+            String nume = tfNume1.getText();
+            String prenume = tfPrenume1.getText();
+            String cnp = tfCNP1.getText();
+            String telefon = tfTelefon1.getText();
+
+            Abonat a = Abonat.getInstance(nume, prenume, cnp, telefon);
+            modelTabelCarteDeTelefon.modificaAbonat(rand, a);
+
+            jfModifica.setVisible(false);
+
+            popupMessage("Abonatul a fost modificat", "Succes", JOptionPane.INFORMATION_MESSAGE);
+        } catch (NumeInvalidException e) {
+            popupMessage("Nume invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } catch (CnpInvalidException e) {
+            popupMessage("CNP invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } catch (NrTelefonInvalidException e) {
+            popupMessage("Nr de telefon invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) {        
+        
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -881,16 +893,24 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
+
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InterfataGrafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InterfataGrafica.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InterfataGrafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InterfataGrafica.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InterfataGrafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InterfataGrafica.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
+
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InterfataGrafica.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(InterfataGrafica.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
         //</editor-fold>
@@ -904,13 +924,14 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
 
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton bAdaugaAbonatNou;
+    private javax.swing.JButton bAdaugaAbonat;
     private javax.swing.JButton bIesire;
     private javax.swing.JButton bModifica;
+    private javax.swing.JButton bModificaAbonat;
+    private javax.swing.JButton bStergereAbonat;
     private javax.swing.JFileChooser fc;
     private javax.swing.JFrame jAbout;
     private javax.swing.JButton jAdauga;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -926,8 +947,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -938,7 +957,6 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JButton jSterge;
     private javax.swing.JTextArea jTextArea3;
     private javax.swing.JTextArea jTextArea4;
     private javax.swing.JFrame jfAdauga;
@@ -946,11 +964,13 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
     private javax.swing.JLabel jlLastSave;
     private javax.swing.JLabel jlReclame;
     private javax.swing.JLabel jlTimpSalvare;
+    private javax.swing.JMenuItem miAbout;
     private javax.swing.JMenuItem miAdauga;
     private javax.swing.JMenu miHelp;
     private javax.swing.JMenuItem miIesire;
     private javax.swing.JMenuItem miInregistrare;
     private javax.swing.JMenuItem miLogOut;
+    private javax.swing.JMenuItem miModifica;
     private javax.swing.JMenuItem miOpen;
     private javax.swing.JMenuItem miSave;
     private javax.swing.JMenuItem miSterge;
@@ -996,7 +1016,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             fr.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.getLogger(InterfataGrafica.class.getName()).log(Level.SEVERE, null, e);
+            Logger
+                    .getLogger(InterfataGrafica.class
+                            .getName()).log(Level.SEVERE, null, e);
         }
     }
 
@@ -1029,7 +1051,9 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
             fw.close();
         } catch (Exception e) {
             e.printStackTrace();
-            Logger.getLogger(InterfataGrafica.class.getName()).log(Level.SEVERE, null, e);
+            Logger
+                    .getLogger(InterfataGrafica.class
+                            .getName()).log(Level.SEVERE, null, e);
         }
 
         // afisarea timpului in jlabel
@@ -1043,4 +1067,17 @@ public class InterfataGrafica extends javax.swing.JFrame implements Serializable
         return ldt.format(DateTimeFormatter.ofPattern(" 'ora' HH:mm", RO)).toString();
     }
 
+    public static void ShowAbonatEditErrorMessage(Exception e) {
+        if (e instanceof NumeInvalidException) {
+            s_instance.popupMessage("Nume invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else if (e instanceof CnpInvalidException) {
+            s_instance.popupMessage("CNP invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else if (e instanceof NrTelefonInvalidException) {
+            s_instance.popupMessage("Nr de telefon invalid", "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else if (e instanceof IllegalArgumentException) {
+            s_instance.popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        } else {
+            s_instance.popupMessage(e.getMessage(), "Eroare", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

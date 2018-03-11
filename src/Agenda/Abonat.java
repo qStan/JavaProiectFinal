@@ -70,7 +70,7 @@ public class Abonat implements Serializable {
         if (NrTel.getInstance(telefonNou) == null) {
             throw new NrTelefonInvalidException("Nr-ul de telefon trebuie sa contina doar cifre!");
         }
-        this.cnp = telefonNou;
+        this.telefon = telefonNou;
     }
 
 // constructor
